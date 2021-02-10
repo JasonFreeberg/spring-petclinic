@@ -11,7 +11,7 @@ FROM openjdk:8-jdk
 
 LABEL maintainer="Jason Freeberg"
 
-COPY --from=0 /project/backend/target/*.jar /app.jar
+COPY --from=0 /project/target/*.jar /app.jar
 
 ENV JAVA_OPTS=""
 
