@@ -16,15 +16,6 @@
 
 package org.springframework.samples.petclinic.system;
 
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
@@ -44,57 +35,9 @@ import java.util.Map;
 @Controller
 class WelcomeController {
 
-    private final String RESOURCE_SERVER_BASE_URI = "https://resource-server-demo.azurewebsites.net";
+	@GetMapping("/")
+	public String welcome() {
+		return "welcome";
+	}
 
-    @GetMapping("/")
-    public String welcome(Map<String, Object> model) {
-        List<?> vets = getCurrentVetsOnCall();
-        vets.forEach(a -> System.out.println(a));
-        model.put("vets", vets);
-        return "welcome";
-    }
-
-    private List<?> getCurrentVetsOnCall() {
-        final String endpoint = this.RESOURCE_SERVER_BASE_URI+"/api/vets/on-call";
-
-        try {
-            final KeyStore keyStore = this.getKeystore();
-            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-
-            SSLContext sslContext = SSLContextBuilder
-                    .create()
-                    .loadKeyMaterial(keyStore,  "changeit".toCharArray())
-                    .loadTrustMaterial(keyStore, acceptingTrustStrategy)
-                    .build();
-            HttpClient client = HttpClients
-                    .custom()
-                    .setSSLContext(sslContext)
-                    .build();
-
-            RestTemplate template = new RestTemplate();
-            template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
-
-            HttpEntity<?> httpEntity = new HttpEntity(null, new HttpHeaders());
-
-            return template
-                    .exchange(new URI(endpoint), HttpMethod.GET, httpEntity, List.class)
-                    .getBody();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Returns the Java Key Store.
-     */
-    private KeyStore getKeystore() throws KeyStoreException, NoSuchAlgorithmException,
-            IOException, CertificateException {
-        KeyStore keyStore = KeyStore.getInstance("jks");
-        keyStore.load(
-                new FileInputStream(System.getenv("JAVA_HOME")+"/lib/security/client.jks"),
-                "changeit".toCharArray());
-        return keyStore;
-    }
 }
