@@ -1,0 +1,35 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - pet-clinic-container
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@master
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: https://antaresdemoregistry.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_b911c9a244f54fdba85755966d75e0cb }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_591f19f9cc94420393926a9c83269b23 }}
+
+    - run: |
+        docker build . -t antaresdemoregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_b911c9a244f54fdba85755966d75e0cb }}/jasonfreebergmyspringapp:${{ github.sha }}
+        docker push antaresdemoregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_b911c9a244f54fdba85755966d75e0cb }}/jasonfreebergmyspringapp:${{ github.sha }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'pet-clinic-container'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_66de2df6315544cfaa6adbdcd5747578 }}
+        images: 'antaresdemoregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_b911c9a244f54fdba85755966d75e0cb }}/jasonfreebergmyspringapp:${{ github.sha }}'
