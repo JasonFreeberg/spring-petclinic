@@ -19,7 +19,7 @@ jobs:
       - name: Log in to container registry
         uses: docker/login-action@v1
         with:
-          registry: https://javaimageacr.azurecr.io/
+          registry: https://javaimageregistry.azurecr.io/
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
@@ -27,14 +27,14 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: javaimageacr.azurecr.io/petclinic-app:${{ github.sha }}
+          tags: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
           file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'production'
+      name: production
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -48,5 +48,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: javademo-mtapp
-          slot-name: 'production'
-          images: java-container-acr.azurecr.io/petclinic-app:${{ github.sha }}
+          slot-name: production
+          images: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
