@@ -30,11 +30,11 @@ jobs:
           tags: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
           file: ./Dockerfile
 
-  deploy:
+  deploy-to-multitenant:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: production
+      name: multi-tenant
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -51,8 +51,21 @@ jobs:
           slot-name: production
           images: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
           
+  deploy-to-ase:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+        name: ase
+        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+        
+    steps:
+      - name: Login with Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
       - name: Deploy to App Service Environment
-        id: deploy-to-webapp2
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: javademo-aseapp
