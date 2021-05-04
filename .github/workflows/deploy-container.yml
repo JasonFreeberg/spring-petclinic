@@ -48,7 +48,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: javademo-mtapp
-          slot-name: production
           images: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
           
   deploy-to-ase:
@@ -69,5 +68,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: javademo-aseapp
-          slot-name: production
           images: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
