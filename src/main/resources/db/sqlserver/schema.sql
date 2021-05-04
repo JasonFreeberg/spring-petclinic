@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS vet_specialties; 
+DROP TABLE IF NOT EXISTS vet_specialties; 
 DROP TABLE IF EXISTS vets; 
 DROP TABLE IF EXISTS specialties; 
 DROP TABLE IF EXISTS visits; 
