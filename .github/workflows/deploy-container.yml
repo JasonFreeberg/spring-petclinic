@@ -43,10 +43,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to multi-tenant Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: javademo-mtapp
+          slot-name: production
+          images: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
+          
+      - name: Deploy to App Service Environment
+        id: deploy-to-webapp2
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: javademo-aseapp
           slot-name: production
           images: javaimageregistry.azurecr.io/petclinic-app:${{ github.sha }}
