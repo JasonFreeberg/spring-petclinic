@@ -53,6 +53,9 @@ jobs:
   deploy-to-ase:
     runs-on: ubuntu-latest
     needs: build
+    environment:
+      name: ase
+      url: https://javademo-aseapp.isolated-java-app-ase.appserviceenvironment.net/
         
     steps:
       - name: Login with Azure CLI
